@@ -497,10 +497,24 @@ Falls back to `default-directory' if it cannot be determined."
 (defun cargo-transient--exec (command &optional args)
   "Run `cargo COMMAND ARGS'."
   (let* ((cargo-args        (if args (mapconcat #'identity args " ") ""))
-         (command           (format "%s %s %s" cargo-transient-cargo-path command cargo-args))
+         (cwd               default-directory)
+         (workspace-root    (cargo-transient--workspace-root))
+         ;; Since default-directory is set below to the workspace
+         ;; root, we need to cd into the original cwd. Using a
+         ;; subshell avoids `compile' changing the default-directory
+         ;; of the current buffer (it looks for "cd" at the beginning
+         ;; of the command).
+         (command           (format "(cd %s && %s %s %s)"
+                                    (shell-quote-argument (expand-file-name cwd))
+                                    cargo-transient-cargo-path
+                                    command
+                                    cargo-args))
          (compilation-buffer-name-function (or cargo-transient-compilation-buffer-name-function
                                                compilation-buffer-name-function))
-         (default-directory (cargo-transient--workspace-root)))
+         ;; Cargo reports errors relative to the workspace root, so we
+         ;; need to set the default-directory to the workspace root
+         ;; for compilation-mode to find the files.
+         (default-directory workspace-root))
     (compile command)))
 
 (defun cargo-transient--metadata ()
