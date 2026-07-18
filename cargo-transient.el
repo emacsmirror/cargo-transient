@@ -496,7 +496,7 @@ Falls back to `default-directory' if it cannot be determined."
 
 (defun cargo-transient--exec (command &optional args)
   "Run `cargo COMMAND ARGS'."
-  (let* ((cargo-args        (if args (mapconcat #'identity args " ") ""))
+  (let* ((cargo-args        (if args (mapconcat #'shell-quote-argument args " ") ""))
          (cwd               default-directory)
          (workspace-root    (cargo-transient--workspace-root))
          ;; Since default-directory is set below to the workspace
