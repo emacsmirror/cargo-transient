@@ -148,7 +148,7 @@ function which returns a list of strings."
 (transient-define-prefix cargo-transient--prefix-check ()
   "Run `cargo check'."
   :man-page "cargo-check"
-  ["Target Seleciton"
+  ["Target Selection"
    (cargo-transient--arg-all-targets)
    (cargo-transient--arg-bin)
    (cargo-transient--arg-bins)
@@ -281,7 +281,7 @@ Ignores dirty or staged status."
   (cargo-transient--exec "fmt"))
 
 (transient-define-prefix cargo-transient--prefix-run ()
-  "Run `cargo run`."
+  "Run `cargo run'."
   :man-page "cargo-run"
   ["Target Selection"
    (cargo-transient--arg-bin)
@@ -466,7 +466,7 @@ Ignores dirty or staged status."
   (member arg cargo-transient--post-args))
 
 (defun cargo-transient--rearrange-args (args)
-  "Rearrange ARGS so that any that must trail `--' are last.
+  "Rearrange ARGS so that any that must trail `--' come last.
 
 If rearranging is necessary, `--' will be added to the list of
 arguments."
