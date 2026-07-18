@@ -54,6 +54,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'project)
 (require 'transient)
 
