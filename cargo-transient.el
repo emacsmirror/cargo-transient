@@ -370,7 +370,7 @@ Ignores dirty or staged status."
   :class 'transient-option
   :key "-b"
   :argument "--bin="
-  :reader (cargo-transient--completing-read 'cargo-transient--target-choices))
+  :reader (cargo-transient--completing-read #'cargo-transient--target-choices))
 
 (transient-define-argument cargo-transient--arg-bins ()
   :description "All binary targets"
@@ -419,7 +419,7 @@ Ignores dirty or staged status."
   :multi-value 'repeat
   :key "-f"
   :argument "--features="
-  :reader (cargo-transient--completing-read-multiple 'cargo-transient--feature-choices))
+  :reader (cargo-transient--completing-read-multiple #'cargo-transient--feature-choices))
 
 (transient-define-argument cargo-transient--arg-all-features ()
   :description "All available features"
@@ -453,7 +453,7 @@ Ignores dirty or staged status."
   :key "--"
   :argument "--"
   :prompt "Arguments: "
-  :reader 'completing-read-multiple
+  :reader #'completing-read-multiple
   :multi-value 'rest)
 
 ;; Private Functions
@@ -542,9 +542,9 @@ Falls back to `default-directory' if it cannot be determined."
   (condition-case err
       (let* ((metadata    (cargo-transient--metadata))
              (packages    (cargo-transient--packages-from-metadata metadata))
-             (targets     (mapcan 'cargo-transient--targets-from-package packages))
-             (bin-targets (seq-filter 'cargo-transient--target-is-bin targets)))
-        (sort (mapcar 'cargo-transient--target-name bin-targets) 'string<))
+             (targets     (mapcan #'cargo-transient--targets-from-package packages))
+             (bin-targets (seq-filter #'cargo-transient--target-is-bin targets)))
+        (sort (mapcar #'cargo-transient--target-name bin-targets) #'string<))
     (error
      (message "Error reading targets from metadata: %s" err)
      '())))
@@ -559,8 +559,8 @@ Falls back to `default-directory' if it cannot be determined."
   (condition-case err
       (let* ((metadata (cargo-transient--metadata))
              (packages (cargo-transient--packages-from-metadata metadata))
-             (features (mapcan 'cargo-transient--features-from-package packages)))
-        (sort features 'string<))
+             (features (mapcan #'cargo-transient--features-from-package packages)))
+        (sort features #'string<))
     (error
      (message "Error reading features from metadata: %s" err)
      '())))
