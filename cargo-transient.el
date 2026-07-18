@@ -40,9 +40,9 @@
 ;; - run
 ;; - test
 
-;; Not all commands and arguments are supported. If cargo-transient is
-;; missing support for something you need, please open a pull request
-;; or file an issue at
+;; Not all commands and arguments are supported.  If cargo-transient
+;; is missing support for something you need, please open a pull
+;; request or file an issue at
 ;; <https://github.com/peterstuart/cargo-transient/>.
 
 ;; By default, all commands will share the same compilation buffer,
@@ -74,6 +74,7 @@ It is equivalent to `project-compilation-buffer-name-function'."
                  (function :tag "Custom function")))
 
 (defun cargo-transient-project-prefixed-buffer-name (mode)
+  "Return a compilation buffer name for MODE, prefixed with the project root."
   (let* ((project           (project-current))
          (default-directory (if project (project-root project) default-directory)))
     (project-prefixed-buffer-name mode)))
@@ -86,16 +87,17 @@ It is equivalent to `project-compilation-buffer-name-function'."
 ;; Utils
 
 (defun cargo-transient--completing-read (generate-collection)
-  "Return a function which reads a string using `completing-read'.
+  "Return a function which will read a string using `completing-read'.
 
 GENERATE-COLLECTION is a function which returns a list of strings."
   (lambda (prompt initial-input history)
     (completing-read prompt (funcall generate-collection) nil nil initial-input history)))
 
 (defun cargo-transient--completing-read-multiple (generate-collection)
-  "Return a function which reads a list of strings using `completing-read-multiple'.
+  "Return a function which will read a list of strings.
 
-GENERATE-COLLECTION is a function which returns a list of strings."
+Uses `completing-read-multiple'.  GENERATE-COLLECTION is a
+function which returns a list of strings."
   (lambda (prompt initial-input history)
     (completing-read-multiple prompt (funcall generate-collection) nil nil initial-input history)))
 
@@ -225,12 +227,13 @@ GENERATE-COLLECTION is a function which returns a list of strings."
   (cargo-transient--exec "clippy" args))
 
 (defun cargo-transient-clippy-fix (&rest args)
-  "Automatically apply lint suggestions."
+  "Automatically apply lint suggestions, with the provided ARGS."
   (interactive (cargo-transient--args))
   (cargo-transient--exec "clippy --fix" args))
 
 (defun cargo-transient-clippy-fix-all (&rest args)
-  "Automatically apply lint suggestions, regardless of dirty or staged status."
+  "Automatically apply lint suggestions, with the provided ARGS.
+Ignores dirty or staged status."
   (interactive (cargo-transient--args))
   (cargo-transient--exec "clippy --fix --allow-dirty --allow-staged" args))
 
@@ -268,7 +271,7 @@ GENERATE-COLLECTION is a function which returns a list of strings."
   (cargo-transient--exec "doc" args))
 
 (defun cargo-transient-doc-open (&rest args)
-  "Open the docs in a browser after building them."
+  "Open the docs in a browser after building them with the provided ARGS."
   (interactive (cargo-transient--args))
   (cargo-transient--exec "doc --open" args))
 
@@ -456,18 +459,14 @@ GENERATE-COLLECTION is a function which returns a list of strings."
 
 (defconst cargo-transient--post-args
   '("--nocapture")
-  "Arguments which must be placed after a trailing `--' in the
-arguments passed to `cargo'.")
+  "Arguments that must appear after a trailing `--' in cargo's arguments.")
 
 (defun cargo-transient--is-post-arg (arg)
-  "Return whether an argument must be placed after a trailing `--'
- in the arguments passed to `cargo'."
+  "Return non-nil if ARG must appear after a trailing `--' argument."
   (member arg cargo-transient--post-args))
 
 (defun cargo-transient--rearrange-args (args)
-  "Return arguments, rearranged if necessary, to handle arguments
-which must occur after a trailing `--' in the arguments passed to
-`cargo'.
+  "Rearrange ARGS so that any that must trail `--' are last.
 
 If rearranging is necessary, `--' will be added to the list of
 arguments."
@@ -530,11 +529,11 @@ Falls back to `default-directory' if it cannot be determined."
   (append (cdr (assoc 'targets package)) nil))
 
 (defun cargo-transient--target-is-bin (target)
-  "Return t if the given target is a binary target."
+  "Return t if TARGET is a binary target."
   (equal (cdr (assoc 'kind target)) ["bin"]))
 
 (defun cargo-transient--target-name (target)
-  "Return the name of the given target."
+  "Return the name of TARGET."
   (cdr (assoc 'name target)))
 
 (defun cargo-transient--target-choices ()
