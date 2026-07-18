@@ -545,9 +545,9 @@ Falls back to `default-directory' if it cannot be determined."
              (targets     (mapcan 'cargo-transient--targets-from-package packages))
              (bin-targets (seq-filter 'cargo-transient--target-is-bin targets)))
         (sort (mapcar 'cargo-transient--target-name bin-targets) 'string<))
-    (error (progn
-             (message "Error reading targets from metadata: %s" err)
-             '()))))
+    (error
+     (message "Error reading targets from metadata: %s" err)
+     '())))
 
 (defun cargo-transient--features-from-package (package)
   "Return the features from the given PACKAGE."
@@ -561,9 +561,9 @@ Falls back to `default-directory' if it cannot be determined."
              (packages (cargo-transient--packages-from-metadata metadata))
              (features (mapcan 'cargo-transient--features-from-package packages)))
         (sort features 'string<))
-    (error (progn
-             (message "Error reading features from metadata: %s" err)
-             '()))))
+    (error
+     (message "Error reading features from metadata: %s" err)
+     '())))
 
 (provide 'cargo-transient)
 
